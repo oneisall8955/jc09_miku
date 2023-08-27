@@ -20,6 +20,9 @@ jobs:
       with:
         arch: aarch64
         distro: ubuntu_latest
+        run: |
+          echo "halo aarch64 !"
+      name: use aarch64
     - name: apt update
       run: sudo apt update
     - name: apt install
