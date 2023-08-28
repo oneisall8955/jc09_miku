@@ -1,0 +1,58 @@
+name: aarch64 build
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_job:
+    name: build on ${{ matrix.distro }} ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: ubuntu_latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: uraimo/run-on-arch-action@v2
+      with:
+        name: build artifact
+        arch: ${{ matrix.arch }}
+        distro: ${{ matrix.distro }}
+        setup: |
+            mkdir -p build
+        githubToken: ${{ github.token }}
+        install: |
+            case "${{ matrix.distro }}" in
+              ubuntu*|jessie|stretch|buster|bullseye)
+                apt-get -y -q update
+                apt-get -y -q install libglib2.0-dev cmake
+                ;;
+              fedora*)
+                dnf -y update
+                dnf -y install libglib2.0-dev cmake
+                ;;
+              alpine*)
+                apk update
+                apk add libglib2.0-dev cmake
+                ;;
+            esac
+        run: |
+          make
+    - uses: actions/upload-artifact@v3
+      with:
+        name: jc09
+        path: build/
+    - name: zipAll
+      run: tar -zcvf Build.tar.gz build
+    - name: Upload to release
+      uses: xresloader/upload-to-github-release@v1.3.12
+      with:
+        file: Build.tar.gz
+        update_latest_release: true
+        draft: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
