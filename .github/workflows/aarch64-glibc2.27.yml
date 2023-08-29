@@ -32,6 +32,6 @@ jobs:
         with:
           file: Build.tar.gz
           update_latest_release: true
-        draft: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
