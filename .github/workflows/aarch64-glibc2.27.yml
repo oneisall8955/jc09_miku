@@ -5,15 +5,15 @@ env:
   CARGO_TERM_COLOR: always
 jobs:
   aarch64_glibc_job:
-    runs-on: ubuntu-18.04
-    name: Build on ubuntu-18.04 aarch64
+    runs-on: ubuntu_latest
+    name: Build on ubuntu_latest aarch64
     steps:
       - uses: actions/checkout@v3
       - uses: uraimo/run-on-arch-action@v2
         name: build artifact
         with:
           arch: aarch64
-          distro: ubuntu18.04
+          distro: ubuntu_latest
           setup: |
             mkdir -p build
           install: |
