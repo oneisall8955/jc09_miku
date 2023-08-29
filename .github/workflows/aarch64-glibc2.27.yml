@@ -1,0 +1,36 @@
+on:
+  workflow_dispatch:
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  aarch64_glibc_job:
+    runs-on: ubuntu-18.04
+    name: Build on ubuntu-18.04 aarch64
+    steps:
+    - uses: actions/checkout@v3
+    - uses: uraimo/run-on-arch-action@v2
+      name: build artifact
+      with:
+        arch: aarch64
+        distro: ubuntu18.04
+        setup: |
+          mkdir -p build
+        install: |
+          apt-get -y -q update
+          apt-get -y -q install libglib2.0-dev=2.27 cmake
+        run: |
+          make
+    - uses: actions/upload-artifact@v3
+      with:
+        name: jc09
+        path: build/
+    - name: zipAll
+      run: tar -zcvf Build.tar.gz build
+    - name: Upload to release
+      uses: xresloader/upload-to-github-release@v1.3.12
+      with:
+        file: Build.tar.gz
+        update_latest_release: true
+        draft: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
